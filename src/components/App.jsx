@@ -1,4 +1,9 @@
+// App.jsc
 import React, { useState } from 'react';
+import { Section } from './Section/Section';
+import { Statistics } from './Statistics/Statistics';
+import { FeedbackOptions } from './FeedbackOptions/FeedbackOptions';
+import { Notification } from './Notification/Notification';
 
 export const App = () => {
   const [state, setState] = useState({
@@ -14,36 +19,36 @@ export const App = () => {
     }));
   };
 
-  const countTotalFeedback = () => {
-    const { good, neutral, bad } = state;
-    return good + neutral + bad;
-  };
-
-  const countPositiveFeedbackPercentage = () => {
-    const { good } = state;
-    const total = countTotalFeedback();
-    return total === 0 ? 0 : Math.round((good / total) * 100);
-  };
-
   const { good, neutral, bad } = state;
-  const totalFeedback = countTotalFeedback();
-  const positivePercentage = countPositiveFeedbackPercentage();
+  const total = good + neutral + bad;
+  const positivePercentage = total === 0 ? 0 : Math.round((good / total) * 100);
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h2>Отзывы</h2>
-      <div>
-        <button onClick={() => handleFeedback('good')}>Хорошо</button>
-        <button onClick={() => handleFeedback('neutral')}>Нейтрально</button>
-        <button onClick={() => handleFeedback('bad')}>Плохо</button>
-      </div>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div style={{ textAlign: 'center' }}>
+        <Section title="Отзывы">
+          <FeedbackOptions
+            options={['good', 'neutral', 'bad']}
+            onLeaveFeedback={handleFeedback}
+          />
+        </Section>
 
-      <h2>Статистика</h2>
-      <p>Хорошо: {good}</p>
-      <p>Нейтрально: {neutral}</p>
-      <p>Плохо: {bad}</p>
-      <p>Всего отзывов: {totalFeedback}</p>
-      <p>Процент положительных отзывов: {positivePercentage}%</p>
+        <Section title="Статистика">
+          {total > 0 ? (
+            <Statistics
+              good={good}
+              neutral={neutral}
+              bad={bad}
+              total={total}
+              positivePercentage={positivePercentage}
+            />
+          ) : (
+            <Notification message="There is no feedback" />
+          )}
+        </Section>
+      </div>
     </div>
   );
 };
+
+
